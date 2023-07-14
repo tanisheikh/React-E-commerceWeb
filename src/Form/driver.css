@@ -1,0 +1,111 @@
+.popoverCustom {
+  margin: 0px -71px;
+  border: 1px solid #ffde95;
+  position: absolute;
+}
+.popoverCustom::before {
+  content: "<- - - - - ";
+  position: absolute;
+  color: azure;
+  left: -20%;
+  top: 40%;
+}
+.popoverCustom > .driver-popover-arrow-side-right,
+.popoverCustom > .driver-popover-arrow-align-start,
+.popoverCustom > .driver-popover-footer > .driver-popover-progress-text {
+  display: none !important;
+}
+.popoverCustom > .driver-popover-close-btn {
+  color: black; 
+  font-style:normal;
+}
+.popoverCustom
+  > .driver-popover-footer
+  > .driver-popover-navigation-btns
+  > .driver-popover-prev-btn {
+  border-radius: 20px;
+  background-color: #f5f3ef;
+  color: black;
+}
+
+.popoverCustom
+  > .driver-popover-footer
+  > .driver-popover-navigation-btns
+  > .driver-popover-next-btn {
+  margin-left: auto;
+  border-radius: 20px;
+  background-color: #ffd885;
+  color: black;
+}
+.popoverCustom
+  > .driver-popover-footer
+  > .driver-popover-navigation-btns
+  > .driver-popover-prev-btn::before {
+  font-family: "Font Awesome 5 Free";
+  content: "\f060";
+  font-weight: 900;
+  font-size: 10px;
+  color: #112336;
+  background: #f7a392;
+  margin-right: 10px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  width: 20px;
+  border-radius: 20px;
+  display: inline-block;
+}
+.popoverCustom
+  > .driver-popover-footer
+  > .driver-popover-navigation-btns
+  > .driver-popover-next-btn::after {
+  font-family: "Font Awesome 5 Free";
+  content: "\f061";
+  font-weight: 900;
+  font-size: 10px;
+  color: #112336;
+  background: #ffffff;
+  margin-left: 10px;
+  height: 20px;
+  line-height: 20px;
+  margin-left: 10px;
+  text-align: center;
+  width: 20px;
+  border-radius: 20px;
+  display: inline-block;
+}
+.doneBtn
+  > .driver-popover-footer
+  > .driver-popover-navigation-btns
+  > .driver-popover-next-btn {
+  padding: 0px 20px;
+  color: black;
+}
+
+.doneBtn
+  > .driver-popover-footer
+  > .driver-popover-navigation-btns
+  > .driver-popover-next-btn::after {
+  display: none;
+}
+.popoverCustom > .driver-popover-checkbox {
+  margin-top: 10px;
+  display: flex;
+  justify-content: start;
+}
+.popoverCustom > .driver-popover-checkbox > label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.popoverCustom > .driver-popover-checkbox > label > input[id="checkBoxId"] {
+  margin-right: 10px;
+  border: 5px solid #173d63;
+  border-radius: 2px;
+}
+.popoverCustom > .driver-popover-checkbox > label > text {
+  color: #173d63;
+  font-style: normal;
+  font-size: 15px;
+  display: inline;
+}
