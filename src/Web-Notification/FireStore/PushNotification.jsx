@@ -13,7 +13,6 @@ const PushNotification = () => {
 // });
 var promise = Push.create('Hello World!');
 console.log("Push>>",Push)
-// Somewhere later in your code...
 
 promise.then(function(notification) {
   console.log("notification>>",notification)
