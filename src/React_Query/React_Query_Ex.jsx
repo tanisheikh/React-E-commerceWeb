@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import "./query.css";
-import { useQuery, useMutation } from "react-query";
+import { useQuery, useMutation, useQueryClient,cancel } from "react-query";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
@@ -26,15 +26,20 @@ import loading from "./loadingGif/loading.gif";
 const React_Query_Ex = () => {
   const [visible, setVisible] = useState(false);
   const [rowDataObj, setRowDataObj] = useState(null);
-  const id1 = new Date().getTime();
+  const queryClient = useQueryClient();
+  const abortController = new AbortController();
 
   const fetchData = async () => {
     const response = await axios.get("http://localhost:4000/data");
+    // console.log("signal>>>",signal)
+    console.log("functioncall after 1 min");
     return response.data;
   };
   const { isLoading, isFetching, error, data, status } = useQuery(
     "users",
-    fetchData
+    fetchData,
+    { staleTime: 60000, refetchInterval: 70000 },
+    
   );
   const addJsonData = async (newData) => {
     const response = await axios.post("http://localhost:4000/data", newData);
@@ -53,10 +58,20 @@ const React_Query_Ex = () => {
     console.log("response.data>>", response.data);
     return response.data;
   };
-  const updateJsonDataMutation = useMutation((updatedData) => {
+
+  const updatedDataRecieveFun = (updatedData) => {
     updateJsonData(updatedData.id, updatedData);
-    console.log("updatedData>>", updatedData);
+  };
+  const updateJsonDataMutation = useMutation(updatedDataRecieveFun, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("users");
+    },
   });
+  // const updateJsonDataMutation = useMutation((updatedData) => {
+  //   updateJsonData(updatedData.id, updatedData);
+
+  //   console.log("updatedData>>", updatedData);
+  // });
 
   const deleteJsonData = useMutation((id) => {
     return axios.delete(`http://localhost:4000/data/${id}`);
@@ -72,6 +87,7 @@ const React_Query_Ex = () => {
   if (error) {
     return <div>"Error..."</div>;
   }
+  
   const showDailogBox = (rowObj) => {
     setRowDataObj({
       userId: rowObj.userId,
@@ -102,7 +118,6 @@ const React_Query_Ex = () => {
   };
   const addDataBtn = () => {
     console.log("add functional called>>");
-    console.log("id>>", id1);
     const newData = rowDataObj;
     setRowDataObj({
       userId: new Date().getTime(),
@@ -111,6 +126,7 @@ const React_Query_Ex = () => {
       body: newData.body,
     });
     addJsonDataMution.mutate(rowDataObj);
+    setVisible(false);
     console.log("rowDataObj>>", rowDataObj);
   };
   const deleteButtonTemplete = (rowData) => {

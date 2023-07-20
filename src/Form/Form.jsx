@@ -143,18 +143,7 @@ const Form = () => {
   });
   console.log("formik>>>", formik);
 
-  // handleSubmitFun()
-  // console.log("valuesinitial>>",values)
-  // formik.setFieldValue("username",'')
-  // formik.setFieldValue("email",'')
-  // formik.setFieldValue("phone",'')
-  // formik.setFieldValue("password",'')
-  // formik.setValues({ values: { ...formik.initialValues } });
-  // formik.setFieldValue("hobbiesInterest",'' );
-  // formik.setFieldValue("gender", '');
-  // formik.setFieldValue("fileImage", imageDefaultPath);
-  // console.log("valuesinitial>>", values);
-  // resetForm();
+  
 
   const onHobbiesChange = (e) => {
     let _hobbies = [...selectedHobbies];
@@ -189,9 +178,9 @@ const Form = () => {
     console.log("imagefile>>", imagefile);
     formik.setFieldValue("fileImage", _imageUrlDelete[0].image);
   };
-  const handleSubmitFun = () => {
-    formik.setValues({ values: formik.initialValues });
-  };
+  // const handleSubmitFun = () => {
+  //   formik.setValues({ values: formik.initialValues });
+  // };
   return (
     <div className="container">
       <Card className="cardCom">
