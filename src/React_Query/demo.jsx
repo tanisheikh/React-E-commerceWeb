@@ -1,5 +1,7 @@
 import { useQuery } from "react-query";
 
+
+
 function MyComponent() {
   const { data, isLoading, isError } = useQuery("myData", fetchData);
 

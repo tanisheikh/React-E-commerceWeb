@@ -121,7 +121,7 @@ const React_Query_Ex = () => {
     const newData = rowDataObj;
     setRowDataObj({
       userId: new Date().getTime(),
-      id: new Date().getTime(),
+      // id: new Date().getTime(),
       title: newData.title,
       body: newData.body,
     });
