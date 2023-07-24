@@ -7,11 +7,13 @@ import "primeicons/primeicons.css";
 // import "https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js";
 // import "https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { Provider } from "react-redux";
 
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import store from './React_Query/Store/Store';
 
 const queryClient = new QueryClient();
 
@@ -19,9 +21,11 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <App />
-      </QueryClientProvider>
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      </Provider>
     </BrowserRouter>
   </React.StrictMode>
 );

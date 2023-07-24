@@ -1,16 +1,17 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./query.css";
-import { useQuery, useMutation, useQueryClient,cancel } from "react-query";
+import { useQuery, useMutation, useQueryClient } from "react-query";
+import ToastMessage from "./ToastMessage";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
-
 import { InputText } from "primereact/inputtext";
-
+import { Toast } from "primereact/toast";
 import loading from "./loadingGif/loading.gif";
-
+import { useDispatch, useSelector } from "react-redux";
+import { fetchData, addData } from "../server";
 //The useQuery hook returns a handful of objects such as isSuccess, isError, isLoading, isFetching, data, and error.
 //    "start": "react-scripts start",
 // Resources
@@ -26,29 +27,35 @@ import loading from "./loadingGif/loading.gif";
 const React_Query_Ex = () => {
   const [visible, setVisible] = useState(false);
   const [rowDataObj, setRowDataObj] = useState(null);
+  const [showToast, setShowToast] = useState(false);
   const queryClient = useQueryClient();
-  const abortController = new AbortController();
-
-  const fetchData = async () => {
-    const response = await axios.get("http://localhost:4000/data");
-    // console.log("signal>>>",signal)
-    console.log("functioncall after 1 min");
-    return response.data;
-  };
-  const { isLoading, isFetching, error, data, status } = useQuery(
-    "users",
+  const dispatch = useDispatch();
+  const rematchData = useSelector((state) => state.formModel.userList);
+  console.log("rematchData>>", rematchData);
+  const { isLoading, isFetching, error, data, status, cancel } = useQuery(
+    "userData",
     fetchData,
-    { staleTime: 60000, refetchInterval: 70000 },
-    
+    {
+      // staleTime: 60000,
+      // refetchInterval: 70000,
+      onSuccess: () => {
+        const data = queryClient.getQueryData("userData");
+        console.log(
+          "queryClient.getQueryData>>>",
+          queryClient.getQueryData("userData")
+        );
+        dispatch.formModel.createRecordAsync(data);
+      },
+    }
   );
-  const addJsonData = async (newData) => {
-    const response = await axios.post("http://localhost:4000/data", newData);
-    console.log("response.data>>", response.data);
 
-    return response.data;
+  const addDataFun = (newDataObj) => {
+    addData(newDataObj);
   };
-  const addJsonDataMution = useMutation((newDataObj) =>
-    addJsonData(newDataObj)
+  const addJsonDataMution = useMutation(
+    addDataFun
+    // {staleTime: 60000,
+    // refetchInterval: 70000,}
   );
   const updateJsonData = async (postId, updatedD) => {
     const response = await axios.put(
@@ -63,9 +70,9 @@ const React_Query_Ex = () => {
     updateJsonData(updatedData.id, updatedData);
   };
   const updateJsonDataMutation = useMutation(updatedDataRecieveFun, {
-    onSuccess: () => {
-      queryClient.invalidateQueries("users");
-    },
+    // onSuccess: () => {
+    //   queryClient.invalidateQueries("users");
+    // },
   });
   // const updateJsonDataMutation = useMutation((updatedData) => {
   //   updateJsonData(updatedData.id, updatedData);
@@ -77,6 +84,14 @@ const React_Query_Ex = () => {
     return axios.delete(`http://localhost:4000/data/${id}`);
   });
 
+  const erorrHandlingFun = () => {
+    const _errorTrue = true;
+    setShowToast(_errorTrue);
+  };
+  const onHideToast = () => {
+    const _errorFalse = false;
+    setShowToast(_errorFalse);
+  };
   if (isLoading) {
     return (
       <div>
@@ -85,9 +100,19 @@ const React_Query_Ex = () => {
     );
   }
   if (error) {
-    return <div>"Error..."</div>;
+    return (
+      <Toast
+        position="top-right"
+        onHide={onHideToast}
+        visible={erorrHandlingFun}
+        severity="error"
+        life={3000} // Time in milliseconds the toast will be shown
+      >
+        {error}
+      </Toast>
+    );
   }
-  
+
   const showDailogBox = (rowObj) => {
     setRowDataObj({
       userId: rowObj.userId,
@@ -128,6 +153,7 @@ const React_Query_Ex = () => {
     addJsonDataMution.mutate(rowDataObj);
     setVisible(false);
     console.log("rowDataObj>>", rowDataObj);
+    queryClient.cancelQueries("userData");
   };
   const deleteButtonTemplete = (rowData) => {
     return (
@@ -144,6 +170,11 @@ const React_Query_Ex = () => {
     // e.preventDefault();
 
     updateJsonDataMutation.mutate(rowDataObj);
+    setVisible(false);
+  };
+  const cancelReq = () => {
+    queryClient.cancelQueries("userData");
+    console.log("function caled cancel>>", queryClient.cancelQueries);
     setVisible(false);
   };
 
@@ -196,6 +227,7 @@ const React_Query_Ex = () => {
             />
             <label htmlFor="desc">Description</label>
           </span>
+
           {data.userId ? (
             <Button
               label="Save"
@@ -213,6 +245,13 @@ const React_Query_Ex = () => {
               autoFocus
             />
           )}
+          <Button
+            label="Cancel"
+            type="button"
+            icon="pi pi-check"
+            onClick={cancelReq}
+            autoFocus
+          />
         </form>
       </Dialog>
     </>
