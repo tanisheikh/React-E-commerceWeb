@@ -27,6 +27,7 @@ import { fetchData, addData, updateData, deleteData } from "../server";
 const React_Query_Ex = () => {
   const [visible, setVisible] = useState(false);
   const [rowDataObj, setRowDataObj] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
   const rematchData = useSelector((state) => state.formModel.userList);
@@ -34,17 +35,20 @@ const React_Query_Ex = () => {
   const toastRef = useRef(null);
 
   const { isLoading, isError, error, data, status, cancel } = useQuery(
-    "userData",
-    fetchData,
+    ["userData",pageNumber],
+    () => fetchData(pageNumber),
     {
+      keepPreviousData : true,
+
+      // cacheTime:20000,
       // staleTime: 60000,
-      // refetchInterval: 604,800,000 ms,
+      // refetchInterval: 604800000,
       onSuccess: () => {
         const data = queryClient.getQueryData("userData");
-        console.log(
-          "queryClient.getQueryData>>>",
-          queryClient.getQueryData("userData")
-        );
+        // console.log(
+        //   "queryClient.getQueryData>>>",
+        //   queryClient.getQueryData("userData")
+        // );
         dispatch.formModel.createRecordAsync(data);
       },
     }
@@ -54,11 +58,7 @@ const React_Query_Ex = () => {
     addData(newDataObj);
   };
 
-  const addJsonDataMution = useMutation(
-    addDataFun
-    // {staleTime: 60000,
-    // refetchInterval: 70000,}
-  );
+  const addJsonDataMution = useMutation(addDataFun);
   const updatedDataRecieveFun = (updatedData) => {
     updateData(updatedData.id, updatedData);
   };
@@ -121,16 +121,10 @@ const React_Query_Ex = () => {
   };
   const addDataBtn = () => {
     console.log("add functional called>>");
-    const newData = rowDataObj;
-    setRowDataObj({
-      userId: new Date().getTime(),
-      // id: new Date().getTime(),
-      title: newData.title,
-      body: newData.body,
-    });
+    rowDataObj.userId = new Date().getTime();
+    console.log("rowDataObj>>", rowDataObj);
     addJsonDataMution.mutate(rowDataObj);
     setVisible(false);
-    console.log("rowDataObj>>", rowDataObj);
     queryClient.cancelQueries("userData");
   };
   const deleteButtonTemplete = (rowData) => {
@@ -155,7 +149,24 @@ const React_Query_Ex = () => {
     console.log("function caled cancel>>", queryClient.cancelQueries);
     setVisible(false);
   };
-
+  const footer = () => {
+    return (
+      <div>
+        <Button
+          label="Prevoius"
+          type="button"
+          // icon="pi pi-check"
+          onClick={()=>setPageNumber((pageNumber)=>pageNumber-1)}
+        />
+        <Button
+          label="Next"
+          type="button"
+          // icon="pi pi-check"
+          onClick={()=>setPageNumber((pageNumber)=>pageNumber+1)}
+        />
+      </div>
+    );
+  };
   return (
     <>
       <Toast ref={toastRef} />
@@ -173,7 +184,11 @@ const React_Query_Ex = () => {
                 className="editBtn"
                 onClick={addButtonTemplete}
               />
-              <DataTable value={data} tableStyle={{ minWidth: "50rem" }}>
+              <DataTable
+                value={rematchData}
+                tableStyle={{ minWidth: "50rem" }}
+                footer={footer}
+              >
                 <Column field="id" header="Id"></Column>
                 <Column field="title" header="Title"></Column>
                 <Column field="body" header="Description"></Column>

@@ -6,6 +6,7 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 // import "https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js";
 // import "https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js";
+import { ReactQueryDevtools } from 'react-query/devtools'
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Provider } from "react-redux";
 
@@ -24,6 +25,7 @@ root.render(
       <Provider store={store}>
         <QueryClientProvider client={queryClient}>
           <App />
+          <ReactQueryDevtools initialIsOpen={false} position="bottom-right"/>
         </QueryClientProvider>
       </Provider>
     </BrowserRouter>
