@@ -13,7 +13,8 @@ import "./App.css";
 // import Notification from "./Web-Notification/Notification";
 // import WebNotification from "./Web-Notification/FireStore/WebNotification";
 // import PushNotification from './Web-Notification/FireStore/PushNotification';
-import  React_Query_Ex from './React_Query/React_Query_Ex'
+import React_Query_Ex from "./React_Query/React_Query_Ex";
+import ToasterDemo from "./React_Query/Toaster-Demo";
 const App = () => {
   // const navigate = useNavigate();
 
@@ -98,7 +99,8 @@ const App = () => {
       {/* <Notification/> */}
       {/* <WebNotification/> */}
       {/* <PushNotification/> */}
-      < React_Query_Ex/>
+      {/* <ToasterDemo /> */}
+      <React_Query_Ex />
       {/* <Toster /> */}
       {/* <AboutMeFile/> */}
       {/* <FormJavaScript/> */}
