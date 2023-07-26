@@ -1,11 +1,15 @@
-.loading_gif{
-    width: 100%;
+.loading_gif {
+  width: 100%;
 }
-.cardTable{
-    display: flex;
+.cardTable {
+  display: flex;
 }
-.editBtn{
-    display: flex;
-    align-self: flex-end;
-    margin-right: 20px;
+.editBtn {
+  display: flex;
+  align-self: flex-end;
+  margin-right: 20px;
+}
+.paginationBtn {
+  display: flex;
+  justify-content: space-between;
 }

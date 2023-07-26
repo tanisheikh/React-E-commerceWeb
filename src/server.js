@@ -2,16 +2,18 @@
 import axios from "axios";
 
 export const fetchData = async (pageNumber) => {
-  const url = `https://api.example.com/data?_limit=10&page=${pageNumber}`;
+  console.log("pageNumber>>",pageNumber)
+  const response = await axios.get( `http://localhost:4000/data`);
+  //const response = await axios.get( `http://localhost:4000/data?_limit=10&page=${pageNumber}`);
 
-  const response = await axios.get(url);
   return response.data;
   //  window.history.back()
 };
 
 export const addData = async (addData) => {
-  console.log("addData>>",addData)
+  console.log("addData>>", addData);
   const response = await axios.post("http://localhost:4000/data", addData);
+  console.log("response.data>>",response.data)
   return response.data;
 };
 

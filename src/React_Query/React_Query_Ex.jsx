@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./query.css";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { DataTable } from "primereact/datatable";
@@ -8,11 +8,11 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
-import loading from "./loadingGif/loading.gif";
+import loadingImg from "./loadingGif/loading.gif";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchData, addData, updateData, deleteData } from "../server";
 
-//The useQuery hook returns a handful of objects such as isSuccess, isError, isLoading, isFetching, data, and error.
+//The useQuery hook returns a handful of objects such as isSuccess, errorOccurred, loading, isFetching, data, and error.
 //    "start": "react-scripts start",
 // Resources
 //   http://localhost:4000/posts
@@ -34,30 +34,55 @@ const React_Query_Ex = () => {
   console.log("rematchData>>", rematchData);
   const toastRef = useRef(null);
 
-  const { isLoading, isError, error, data, status, cancel } = useQuery(
-    ["userData",pageNumber],
-    () => fetchData(pageNumber),
-    {
-      keepPreviousData : true,
+//fetch Data using useQuery
+  const queryResult = useQuery('userData', fetchData, {
+    staleTime: 5000,
+    cacheTime: 60000,
+    refetchInterval: 30000,
+    keepPreviousData: true,
+    onSuccess: () => {
+            const dataArray = queryClient.getQueryData("userData");
+            // console.log(ss
+            //   "queryClient.getQueryData>>>",
+            //   queryClient.getQueryData("userData")
+            // );
+            dispatch.formModel.createRecordAsync(dataArray);
+            console.log("data>>", dataArray);
+          },
+  });
+  const { data: usersData, isLoading: loading, isError: errorOccurred, error } = queryResult;
+  
 
-      // cacheTime:20000,
-      // staleTime: 60000,
-      // refetchInterval: 604800000,
-      onSuccess: () => {
-        const data = queryClient.getQueryData("userData");
-        // console.log(
-        //   "queryClient.getQueryData>>>",
-        //   queryClient.getQueryData("userData")
-        // );
-        dispatch.formModel.createRecordAsync(data);
-      },
-    }
-  );
+    // useQuery(
+    //   // ["userData",pageNumber],
+    //   //   ()=>fetchData(pageNumber),
+    //   "userData",
+    //   fetchData,
+    //   {
+    //     keepPreviousData: true,
+    //     select: (data) => ({
+    //       arrayData: data.data,
+    //     }),
+
+    //     // cacheTime:20000,
+    //     // staleTime: 60000,
+    //     // refetchInterval: 604800000,
+    //     onSuccess: () => {
+    //       const dataArray = queryClient.getQueryData("userData");
+    //       // console.log(
+    //       //   "queryClient.getQueryData>>>",
+    //       //   queryClient.getQueryData("userData")
+    //       // );
+    //       dispatch.formModel.createRecordAsync(dataArray);
+    //       console.log("data>>", dataArray);
+    //     },
+    //   }
+    // );
 
   const addDataFun = (newDataObj) => {
     addData(newDataObj);
   };
-
+//Add Data using useMution 
   const addJsonDataMution = useMutation(addDataFun);
   const updatedDataRecieveFun = (updatedData) => {
     updateData(updatedData.id, updatedData);
@@ -67,15 +92,37 @@ const React_Query_Ex = () => {
   //   //   queryClient.invalidateQueries("users");
   //   // },
   // });
+
+
+  //update Data using useMution 
+
   const updateJsonDataMutation = useMutation((updatedDataObj) => {
     updatedDataRecieveFun(updatedDataObj);
 
     console.log("updatedDataObj>>", updatedDataObj);
   });
 
+  //delete Data using useMution 
+
   const deleteDataMutation = useMutation((id) => {
     deleteData(id);
   });
+  console.log("toastRef>>>", toastRef);
+
+  //how to cancel request when user click window back before form submit  using react query cancelQueries
+
+  useEffect(() => {
+    const handleBackWindow = () => {
+      queryClient.cancelQueries("userData");
+    };
+    console.log("useEffect request cancelled");
+    window.addEventListener("beforeunload", handleBackWindow);
+    return () => {
+      window.removeEventListener("beforeunload", handleBackWindow);
+    };
+  }, []);
+
+
 
   const show = () => {
     if (toastRef && toastRef.current)
@@ -145,34 +192,44 @@ const React_Query_Ex = () => {
     setVisible(false);
   };
   const cancelReq = () => {
+    //manually cancel Api reqest (cancelQueries)
     queryClient.cancelQueries("userData");
     console.log("function caled cancel>>", queryClient.cancelQueries);
     setVisible(false);
   };
+  const pageInc = () => {
+    console.log("pageNumberInc", pageNumber);
+
+    setPageNumber((page) => page + 1);
+  };
+  const pageDec = () => {
+    console.log("pageNumberDec", pageNumber);
+
+    setPageNumber((page) => page - 1);
+  };
   const footer = () => {
     return (
-      <div>
+      <div className="paginationBtn">
         <Button
-          label="Prevoius"
           type="button"
-          // icon="pi pi-check"
-          onClick={()=>setPageNumber((pageNumber)=>pageNumber-1)}
+          icon="pi pi-angle-double-left"
+          onClick={pageDec}
         />
         <Button
-          label="Next"
           type="button"
-          // icon="pi pi-check"
-          onClick={()=>setPageNumber((pageNumber)=>pageNumber+1)}
+          icon="pi pi-angle-double-right"
+          onClick={pageInc}
         />
       </div>
     );
   };
+
   return (
     <>
       <Toast ref={toastRef} />
-      {isLoading ? (
+      {loading ? (
         <div>
-          <img src={loading} alt="loading..." className="loading_gif" />
+          <img src={loadingImg} alt="loading..." className="loading_gif" />
         </div>
       ) : (
         <>
@@ -185,9 +242,9 @@ const React_Query_Ex = () => {
                 onClick={addButtonTemplete}
               />
               <DataTable
-                value={rematchData}
+                value={usersData}
                 tableStyle={{ minWidth: "50rem" }}
-                footer={footer}
+                footer={usersData ? footer : ""}
               >
                 <Column field="id" header="Id"></Column>
                 <Column field="title" header="Title"></Column>
@@ -231,7 +288,7 @@ const React_Query_Ex = () => {
                 <label htmlFor="desc">Description</label>
               </span>
 
-              {data?.userId ? (
+              {usersData?.userId ? (
                 <Button
                   label="Save"
                   type="button"
@@ -259,7 +316,7 @@ const React_Query_Ex = () => {
           </Dialog>
         </>
       )}
-      {isError ? setTimeOutShowFun() : ""}
+      {errorOccurred ? setTimeOutShowFun() : ""}
     </>
   );
 };
