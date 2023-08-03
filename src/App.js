@@ -1,4 +1,3 @@
-
 //Network Url :http://192.168.0.109:3000
 
 import logo from "./logo.svg";
@@ -18,6 +17,9 @@ import "./App.css";
 // import PushNotification from './Web-Notification/FireStore/PushNotification';
 import React_Query_Ex from "./React_Query/React_Query_Ex";
 import ToasterDemo from "./React_Query/Toaster-Demo";
+import UseReducerwithuseContextEx from "./useContextWithuseReducer/UseReducerwithuseContextEx";
+import Com1 from "./useContextWithuseReducer/Com1";
+import AsyncAndAwait from './AsycAndAwit/AsyncAndAwait'
 const App = () => {
   // const navigate = useNavigate();
 
@@ -98,12 +100,16 @@ const App = () => {
 
   return (
     <div>
+      {/* <UseReducerwithuseContextEx>
+        <Com1 />
+      </UseReducerwithuseContextEx> */}
+    <AsyncAndAwait/>
       {/* <Form/> */}
       {/* <Notification/> */}
       {/* <WebNotification/> */}
       {/* <PushNotification/> */}
       {/* <ToasterDemo /> */}
-      <React_Query_Ex />
+      {/* <React_Query_Ex /> */}
       {/* <Toster /> */}
       {/* <AboutMeFile/> */}
       {/* <FormJavaScript/> */}
